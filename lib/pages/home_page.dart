@@ -65,13 +65,15 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          _showGraph(),
+          SizedBox(height: 40.0,),
           Expanded(
             child: ListView.builder(
               itemCount: bands.length,
               itemBuilder: (BuildContext context, int index) =>  _bandTile(bands[index])
             ),
-          )
+          ),
+          _showGraph(),
+          
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -181,6 +183,7 @@ class _HomePageState extends State<HomePage> {
       dataMap.putIfAbsent(band.name, () => band.votes.toDouble() );
     });
     return Container(
+      padding: EdgeInsets.only(top: 10),
       width: double.infinity,
       height: 200.0,
       child: PieChart(
