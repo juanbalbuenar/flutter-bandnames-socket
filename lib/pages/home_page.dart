@@ -65,14 +65,24 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 40.0,),
+          FutureBuilder(
+          future: _showGraph(),
+          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+          if( !snapshot.hasData ){
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return snapshot.data;
+              }
+            },
+          ),
+
           Expanded(
             child: ListView.builder(
               itemCount: bands.length,
               itemBuilder: (BuildContext context, int index) =>  _bandTile(bands[index])
             ),
           ),
-          _showGraph(),
+          
           
         ],
       ),
@@ -176,18 +186,13 @@ class _HomePageState extends State<HomePage> {
     Navigator.pop(context);
   }
 
-  Widget _showGraph() {
-    Map<String, double> dataMap = new Map();
-    //dataMap.putIfAbsent("Flutter", () => 5);
-    bands.forEach((band) { 
-      dataMap.putIfAbsent(band.name, () => band.votes.toDouble() );
-    });
-    return Container(
-      padding: EdgeInsets.only(top: 10),
-      width: double.infinity,
-      height: 200.0,
-      child: PieChart(
-        dataMap: dataMap)
-      );
+  Future<Widget> _showGraph() async {
+    Map<String, double> dataMap = {};
+    if( bands.isNotEmpty ){
+      await Future.forEach(bands, ( band )=> dataMap.putIfAbsent(band.name, () => band.votes.toDouble()));
+      return PieChart(dataMap: dataMap);
+    } else {
+      return null;
+    }
   }
 }
